@@ -1,0 +1,945 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CarePlus Hospital - Appointment Management System</title>
+
+<style>
+:root {
+    --primary: #1261a0;
+    --secondary: #13a89e;
+    --bg: #f4f8fb;
+    --text: #17324d;
+    --muted: #64748b;
+    --border: #dce7ef;
+    --danger: #dc3545;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+}
+
+button, input, select, textarea { font: inherit; }
+
+.top {
+    background: linear-gradient(120deg, #0b4778, #159c94);
+    color: white;
+    padding: 20px 6%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.brand { display: flex; align-items: center; gap: 12px; }
+.logo { font-size: 35px; }
+.brand h1 { margin: 0; font-size: 25px; }
+.brand p { margin: 4px 0 0; }
+
+.nav { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.nav button {
+    background: #ffffff18;
+    color: white;
+    border: 1px solid #ffffff55;
+    padding: 9px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.nav button.active, .nav button:hover {
+    background: white;
+    color: var(--primary);
+}
+
+.hero {
+    padding: 48px 6%;
+    background: white;
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 35px;
+    align-items: center;
+}
+
+.hero h2 { font-size: 38px; margin: 0 0 14px; }
+.hero p { font-size: 18px; color: var(--muted); line-height: 1.6; }
+
+.hero-card {
+    background: #eaf8f7;
+    border-radius: 18px;
+    padding: 25px;
+}
+
+.hero-card div { padding: 10px 0; }
+
+.container { max-width: 1150px; margin: auto; padding: 35px 6%; }
+.section { display: none; }
+.section.active { display: block; }
+.title { margin-bottom: 22px; }
+.title h2 { margin: 0 0 6px; font-size: 30px; }
+.title p { color: var(--muted); }
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+.card, .form {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 8px 24px #17324d18;
+}
+
+.form { max-width: 800px; }
+
+.row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.field { margin-bottom: 16px; }
+
+.field label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 7px;
+}
+
+.field input, .field select, .field textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cbd8e2;
+    border-radius: 8px;
+}
+
+.field textarea { resize: vertical; min-height: 85px; }
+
+.btn {
+    border: 0;
+    border-radius: 8px;
+    padding: 12px 18px;
+    cursor: pointer;
+    font-weight: bold;
+    margin: 3px;
+}
+
+.primary { background: var(--primary); color: white; }
+.secondary { background: var(--secondary); color: white; }
+.danger { background: var(--danger); color: white; }
+.light { background: #eef4f8; color: var(--text); }
+
+.confirmation {
+    display: none;
+    background: #eaf8f2;
+    border: 1px solid #a9dec8;
+    padding: 22px;
+    border-radius: 12px;
+    margin-top: 20px;
+    max-width: 800px;
+    overflow-wrap: anywhere;
+}
+
+.id { font-size: 24px; font-weight: bold; letter-spacing: 1px; }
+
+.tools { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+
+.appointment {
+    border-left: 5px solid var(--secondary);
+    margin-bottom: 14px;
+}
+
+.appointment.cancelled {
+    border-left-color: var(--danger);
+}
+
+.status {
+    float: right;
+    font-size: 12px;
+    padding: 5px 9px;
+    border-radius: 20px;
+    background: #e7f8f5;
+    color: #08786f;
+}
+
+.cancelled .status { background: #fde9eb; color: #a51f2c; }
+
+.info {
+    background: #fff7df;
+    border: 1px solid #f1db91;
+    padding: 13px;
+    border-radius: 9px;
+    margin-bottom: 18px;
+}
+
+.empty { text-align: center; color: var(--muted); padding: 30px; }
+
+.doctor { display: flex; gap: 15px; align-items: center; margin: 12px 0; }
+.avatar {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: #e5f3ff;
+    font-size: 26px;
+}
+
+.tag {
+    display: inline-block;
+    background: #e7f8f5;
+    color: #08786f;
+    border-radius: 20px;
+    padding: 5px 10px;
+    font-size: 12px;
+    margin-top: 7px;
+}
+
+footer {
+    text-align: center;
+    padding: 25px;
+    background: #103b5a;
+    color: #d9e8f3;
+    margin-top: 30px;
+}
+
+@media (max-width: 800px) {
+    .hero, .grid, .row { grid-template-columns: 1fr; }
+    .top { align-items: flex-start; flex-direction: column; }
+    .hero h2 { font-size: 30px; }
+}
+</style>
+</head>
+
+<body>
+
+<header class="top">
+    <div class="brand">
+        <div class="logo">🏥</div>
+        <div>
+            <h1>CarePlus Hospital</h1>
+            <p>Hospital Appointment Management System</p>
+        </div>
+    </div>
+
+    <nav class="nav">
+        <button class="active" onclick="show('home',this)">Home</button>
+        <button onclick="show('doctors',this)">Doctors & Departments</button>
+        <button onclick="startBooking()">Book Appointment</button>
+        <button onclick="show('manage',this)">Manage Appointment</button>
+        <button onclick="show('admin',this)">Hospital Dashboard</button>
+    </nav>
+</header>
+
+<main>
+
+<section id="home" class="section active">
+    <div class="hero">
+        <div>
+            <h2>Quality Care, Easy Appointments.</h2>
+            <p>Find a department, choose your doctor, select an available time slot and book your hospital appointment online.</p>
+            <button class="btn primary" onclick="startBooking()">📅 Book an Appointment</button>
+        </div>
+
+        <div class="hero-card">
+            <div>🕘 <b>OP Timings:</b> 9:00 AM – 6:00 PM</div>
+            <div>📞 <b>Emergency:</b> 108 / Hospital Help Desk</div>
+            <div>📍 <b>Address:</b> Main Road, Tirupati</div>
+            <div>🔐 <b>System:</b> Appointment Records</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="title"><h2>Why use our system?</h2></div>
+        <div class="grid">
+            <div class="card">
+                <h3>📅 Easy Booking</h3>
+                <p>Select a doctor, date and available time slot.</p>
+            </div>
+            <div class="card">
+                <h3>⚡ Instant Confirmation</h3>
+                <p>Get a unique appointment ID after booking.</p>
+            </div>
+            <div class="card">
+                <h3>🔄 Flexible Management</h3>
+                <p>Cancel or reschedule your appointment.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="doctors" class="section">
+    <div class="container">
+        <div class="title">
+            <h2>Doctors & Departments</h2>
+            <p>View the doctors available in each department.</p>
+        </div>
+        <div class="grid" id="doctorList"></div>
+    </div>
+</section>
+
+<section id="book" class="section">
+    <div class="container">
+        <div class="title">
+            <h2>📝 Appointment Booking</h2>
+            <p>Enter patient details and select an available slot.</p>
+        </div>
+
+        <form class="form" id="bookingForm">
+            <div class="row">
+                <div class="field">
+                    <label for="patient">Patient Name *</label>
+                    <input id="patient" required placeholder="Enter patient name">
+                </div>
+                <div class="field">
+                    <label for="phone">Phone Number *</label>
+                    <input id="phone" required pattern="[0-9]{10}" maxlength="10" placeholder="10 digit mobile number">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="field">
+                    <label for="age">Age *</label>
+                    <input id="age" type="number" min="1" max="120" required>
+                </div>
+                <div class="field">
+                    <label for="dept">Department *</label>
+                    <select id="dept" required>
+                        <option value="">Select department</option>
+                        <option>General Medicine</option>
+                        <option>Cardiology</option>
+                        <option>Dermatology</option>
+                        <option>Orthopedics</option>
+                        <option>Pediatrics</option>
+                        <option>Gynecology</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="field">
+                    <label for="doctor">Doctor *</label>
+                    <select id="doctor" required>
+                        <option value="">Select department first</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="date">Appointment Date *</label>
+                    <input id="date" type="date" required>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="slot">Available Time Slot *</label>
+                <select id="slot" required>
+                    <option value="">Select date and doctor first</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="reason">Reason / Disease</label>
+                <input id="reason" placeholder="Enter reason or disease">
+            </div>
+
+            <button class="btn primary" id="submitBtn" type="submit">✅ Confirm Appointment</button>
+            <button class="btn light" type="button" onclick="resetBooking()">Clear Form</button>
+        </form>
+
+        <div class="confirmation" id="confirmation"></div>
+    </div>
+</section>
+
+<section id="manage" class="section">
+    <div class="container">
+        <div class="title">
+            <h2>🔄 Manage Appointment</h2>
+            <p>Use your appointment ID to find your booking.</p>
+        </div>
+
+        <div class="form">
+            <div class="field">
+                <label for="manageId">Appointment ID</label>
+                <input id="manageId" placeholder="Enter your appointment ID">
+            </div>
+            <button class="btn primary" onclick="findAppointment()">Search Appointment</button>
+        </div>
+
+        <div id="manageResult"></div>
+    </div>
+</section>
+
+<section id="admin" class="section">
+    <div class="container">
+        <div class="title">
+            <h2>📋 Hospital Dashboard</h2>
+            <p>View and manage appointment records.</p>
+        </div>
+
+        <div class="tools">
+            <button class="btn light" onclick="renderAdmin()">↻ Refresh</button>
+            <button class="btn danger" onclick="clearAll()">Clear Demo Records</button>
+        </div>
+
+        <div class="card"><div id="adminList"></div></div>
+    </div>
+</section>
+
+</main>
+
+<footer>
+    © 2026 CarePlus Hospital • Hospital Appointment Management System • Demo Project
+</footer>
+
+<script>
+"use strict";
+
+/* DOCTORS DATA */
+
+const doctors = {
+    "General Medicine": ["Dr. Ravi Kumar", "Dr. Priya Sharma"],
+    "Cardiology": ["Dr. Arjun Reddy", "Dr. Meena Rao"],
+    "Dermatology": ["Dr. Anjali Devi"],
+    "Orthopedics": ["Dr. Suresh Babu"],
+    "Pediatrics": ["Dr. Kavya Reddy"],
+    "Gynecology": ["Dr. Lakshmi Priya"]
+};
+
+/* TIME SLOTS */
+
+const slots = [
+    "09:00 AM", "09:30 AM",
+    "10:00 AM", "10:30 AM",
+    "11:00 AM", "11:30 AM",
+    "02:00 PM", "02:30 PM",
+    "03:00 PM", "03:30 PM",
+    "04:00 PM", "04:30 PM"
+];
+
+/* ELEMENT REFERENCES */
+
+const bookingForm = document.getElementById("bookingForm");
+const patientInput = document.getElementById("patient");
+const phoneInput = document.getElementById("phone");
+const ageInput = document.getElementById("age");
+const deptInput = document.getElementById("dept");
+const doctorInput = document.getElementById("doctor");
+const dateInput = document.getElementById("date");
+const slotInput = document.getElementById("slot");
+const reasonInput = document.getElementById("reason");
+const confirmation = document.getElementById("confirmation");
+const manageIdInput = document.getElementById("manageId");
+const manageResult = document.getElementById("manageResult");
+const adminList = document.getElementById("adminList");
+const doctorList = document.getElementById("doctorList");
+const submitBtn = document.getElementById("submitBtn");
+
+/* LOAD SAVED APPOINTMENTS */
+
+let appointments = [];
+
+try {
+    appointments = JSON.parse(
+        localStorage.getItem("careplusAppointments") || "[]"
+    );
+
+    if (!Array.isArray(appointments)) appointments = [];
+} catch (error) {
+    appointments = [];
+}
+
+/* RESCHEDULE TRACKING
+   Stores the original appointment ID.
+   It will not generate a new ID during rescheduling.
+*/
+
+let editingAppointmentId = null;
+
+/* SAVE DATA */
+
+function save() {
+    localStorage.setItem(
+        "careplusAppointments",
+        JSON.stringify(appointments)
+    );
+}
+
+/* PAGE NAVIGATION */
+
+function show(id, btn) {
+    document.querySelectorAll(".section").forEach(section => {
+        section.classList.remove("active");
+    });
+
+    document.getElementById(id).classList.add("active");
+
+    if (btn) {
+        document.querySelectorAll(".nav button").forEach(button => {
+            button.classList.remove("active");
+        });
+        btn.classList.add("active");
+    }
+
+    if (id === "admin") renderAdmin();
+    if (id === "doctors") renderDoctors();
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+/* DISPLAY DOCTORS */
+
+function renderDoctors() {
+    doctorList.innerHTML = Object.entries(doctors).map(
+        ([department, names]) => `
+            <div class="card">
+                <h3>🏥 ${department}</h3>
+                ${names.map(name => `
+                    <div class="doctor">
+                        <div class="avatar">👨‍⚕️</div>
+                        <div>
+                            <b>${name}</b><br>
+                            <span class="tag">Available</span>
+                        </div>
+                    </div>
+                `).join("")}
+            </div>
+        `
+    ).join("");
+}
+
+/* UPDATE DOCTOR LIST */
+
+function updateDoctors() {
+    const department = deptInput.value;
+
+    doctorInput.innerHTML =
+        '<option value="">Select doctor</option>' +
+        (doctors[department] || []).map(name =>
+            `<option value="${name}">${name}</option>`
+        ).join("");
+
+    updateSlots();
+}
+
+/* UPDATE AVAILABLE SLOTS */
+
+function updateSlots() {
+    if (!doctorInput.value || !dateInput.value) {
+        slotInput.innerHTML =
+            '<option value="">Select date and doctor first</option>';
+        return;
+    }
+
+    const takenSlots = appointments
+        .filter(a =>
+            a.doctor === doctorInput.value &&
+            a.date === dateInput.value &&
+            a.status === "Booked" &&
+            a.id !== editingAppointmentId
+        )
+        .map(a => a.slot);
+
+    slotInput.innerHTML =
+        '<option value="">Select time slot</option>' +
+        slots.filter(time => !takenSlots.includes(time))
+            .map(time => `<option value="${time}">${time}</option>`)
+            .join("");
+}
+
+/* RESET BOOKING FORM */
+
+function resetBooking() {
+    bookingForm.reset();
+    editingAppointmentId = null;
+
+    doctorInput.innerHTML =
+        '<option value="">Select department first</option>';
+
+    slotInput.innerHTML =
+        '<option value="">Select date and doctor first</option>';
+
+    submitBtn.textContent = "✅ Confirm Appointment";
+    confirmation.style.display = "none";
+}
+
+/* OPEN NEW BOOKING */
+
+function startBooking() {
+    resetBooking();
+    show("book");
+}
+
+/* BOOK OR RESCHEDULE APPOINTMENT */
+
+bookingForm.addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    const patient = patientInput.value.trim();
+    const phone = phoneInput.value.trim();
+    const age = ageInput.value;
+    const department = deptInput.value;
+    const doctor = doctorInput.value;
+    const date = dateInput.value;
+    const slot = slotInput.value;
+    const reason = reasonInput.value.trim();
+
+    if (!patient || !phone || !age || !department ||
+        !doctor || !date || !slot) {
+        alert("Please fill all required fields.");
+        return;
+    }
+
+    if (editingAppointmentId) {
+        /* FIND THE ORIGINAL APPOINTMENT */
+
+        const appointment = appointments.find(
+            a => a.id === editingAppointmentId
+        );
+
+        if (!appointment) {
+            alert("Appointment not found. Please search again.");
+            editingAppointmentId = null;
+            return;
+        }
+
+        /* UPDATE THE EXISTING RECORD.
+           IMPORTANT: appointment.id IS NOT CHANGED.
+        */
+
+        appointment.patient = patient;
+        appointment.phone = phone;
+        appointment.age = age;
+        appointment.dept = department;
+        appointment.doctor = doctor;
+        appointment.date = date;
+        appointment.slot = slot;
+        appointment.reason = reason;
+        appointment.status = "Booked";
+
+        const unchangedId = appointment.id;
+
+        save();
+
+        confirmation.style.display = "block";
+        confirmation.innerHTML = `
+            <h3>✅ Appointment Rescheduled Successfully!</h3>
+            <p>Your appointment date and time have been updated.</p>
+            <p>Appointment ID remains the same:</p>
+            <div class="id">${unchangedId}</div>
+            <p><b>${doctor}</b> • ${date} • ${slot}</p>
+        `;
+
+        editingAppointmentId = null;
+        submitBtn.textContent = "✅ Confirm Appointment";
+        bookingForm.reset();
+
+        doctorInput.innerHTML =
+            '<option value="">Select department first</option>';
+
+        slotInput.innerHTML =
+            '<option value="">Select date and doctor first</option>';
+
+        renderAdmin();
+        return;
+    }
+
+    /* CREATE A NEW APPOINTMENT */
+
+    let id;
+
+    do {
+        id = "CA-" +
+            date.replaceAll("-", "") +
+            "-" +
+            Math.floor(1000 + Math.random() * 9000);
+    } while (appointments.some(a => a.id === id));
+
+    const appointment = {
+        id,
+        patient,
+        phone,
+        age,
+        dept: department,
+        doctor,
+        date,
+        slot,
+        reason,
+        status: "Booked",
+        cancellationReason: ""
+    };
+
+    appointments.push(appointment);
+    save();
+
+    confirmation.style.display = "block";
+    confirmation.innerHTML = `
+        <h3>✅ Appointment Booked Successfully!</h3>
+        <p>Your appointment has been confirmed.</p>
+        <p>Appointment ID:</p>
+        <div class="id">${id}</div>
+        <p><b>${doctor}</b> • ${date} • ${slot}</p>
+        <button class="btn light"
+            onclick="openManage('${id}')">
+            Manage Appointment
+        </button>
+    `;
+
+    bookingForm.reset();
+
+    doctorInput.innerHTML =
+        '<option value="">Select department first</option>';
+
+    slotInput.innerHTML =
+        '<option value="">Select date and doctor first</option>';
+
+    renderAdmin();
+});
+
+/* OPEN MANAGE APPOINTMENT */
+
+function openManage(id) {
+    manageIdInput.value = id;
+    show("manage");
+    findAppointment();
+}
+
+/* FIND APPOINTMENT */
+
+function findAppointment() {
+    const id = manageIdInput.value.trim().toUpperCase();
+
+    const appointment = appointments.find(a => a.id === id);
+
+    if (!appointment) {
+        manageResult.innerHTML = `
+            <div class="info">
+                ❌ Appointment not found. Please check the ID.
+            </div>
+        `;
+        return;
+    }
+
+    const cancellationDetails = appointment.cancellationReason
+        ? `<p><b>Cancellation Reason:</b>
+            ${escapeHTML(appointment.cancellationReason)}</p>`
+        : "";
+
+    manageResult.innerHTML = `
+        <div class="card appointment
+            ${appointment.status === "Cancelled" ? "cancelled" : ""}"
+            style="margin-top:20px">
+
+            <span class="status">${appointment.status}</span>
+
+            <h3>${appointment.id}</h3>
+
+            <p><b>Patient:</b> ${escapeHTML(appointment.patient)}
+                (${appointment.age})</p>
+
+            <p><b>Phone:</b> ${escapeHTML(appointment.phone)}</p>
+
+            <p><b>Department:</b> ${escapeHTML(appointment.dept)}</p>
+
+            <p><b>Doctor:</b> ${escapeHTML(appointment.doctor)}</p>
+
+            <p><b>Date & Time:</b>
+                ${appointment.date} • ${appointment.slot}</p>
+
+            <p><b>Reason / Disease:</b>
+                ${escapeHTML(appointment.reason || "Not specified")}</p>
+
+            ${cancellationDetails}
+
+            ${appointment.status === "Booked" ? `
+                <button class="btn secondary"
+                    onclick="reschedule('${appointment.id}')">
+                    Reschedule
+                </button>
+
+                <button class="btn danger"
+                    onclick="cancelAppointment('${appointment.id}')">
+                    Cancel Appointment
+                </button>
+            ` : ""}
+        </div>
+    `;
+}
+
+/* SAFE DISPLAY OF USER-ENTERED TEXT */
+
+function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, character => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+    })[character]);
+}
+
+/* CANCEL APPOINTMENT
+   Cancellation reason is mandatory.
+*/
+
+function cancelAppointment(id) {
+    const appointment = appointments.find(a => a.id === id);
+
+    if (!appointment || appointment.status !== "Booked") {
+        alert("Active appointment not found.");
+        return;
+    }
+
+    const cancellationReason = prompt(
+        "Please enter the reason for cancelling this appointment:"
+    );
+
+    if (cancellationReason === null) {
+        return;
+    }
+
+    if (!cancellationReason.trim()) {
+        alert("Cancellation reason is required.");
+        return;
+    }
+
+    if (!confirm("Are you sure you want to cancel this appointment?")) {
+        return;
+    }
+
+    appointment.status = "Cancelled";
+    appointment.cancellationReason = cancellationReason.trim();
+
+    save();
+    findAppointment();
+    renderAdmin();
+    updateSlots();
+}
+
+/* RESCHEDULE APPOINTMENT
+   Keep the same ID and update the existing record.
+*/
+
+function reschedule(id) {
+    const appointment = appointments.find(a => a.id === id);
+
+    if (!appointment || appointment.status !== "Booked") {
+        alert("Active appointment not found.");
+        return;
+    }
+
+    editingAppointmentId = appointment.id;
+
+    show("book");
+
+    patientInput.value = appointment.patient;
+    phoneInput.value = appointment.phone;
+    ageInput.value = appointment.age;
+    deptInput.value = appointment.dept;
+
+    updateDoctors();
+
+    doctorInput.value = appointment.doctor;
+    dateInput.value = appointment.date;
+
+    updateSlots();
+
+    slotInput.value = appointment.slot;
+    reasonInput.value = appointment.reason || "";
+
+    submitBtn.textContent = "🔄 Update Appointment";
+
+    confirmation.style.display = "block";
+    confirmation.innerHTML = `
+        <div class="info">
+            <b>Rescheduling Appointment:</b> ${appointment.id}<br>
+            Select a new date or time and submit.<br>
+            Your existing Appointment ID will remain unchanged.
+        </div>
+    `;
+}
+
+/* HOSPITAL DASHBOARD */
+
+function renderAdmin() {
+    if (!appointments.length) {
+        adminList.innerHTML = `
+            <div class="empty">
+                No appointments yet. Book an appointment to see it here.
+            </div>
+        `;
+        return;
+    }
+
+    adminList.innerHTML = appointments.slice().reverse().map(a => `
+        <div class="card appointment
+            ${a.status === "Cancelled" ? "cancelled" : ""}">
+
+            <span class="status">${a.status}</span>
+
+            <h3>${a.id}</h3>
+
+            <p><b>${escapeHTML(a.patient)}</b>
+                • ${escapeHTML(a.phone)}</p>
+
+            <p>${escapeHTML(a.doctor)}
+                • ${escapeHTML(a.dept)}
+                • ${a.date}
+                • ${a.slot}</p>
+
+            ${a.status === "Cancelled" ? `
+                <p><b>Cancellation Reason:</b>
+                    ${escapeHTML(a.cancellationReason || "Not specified")}
+                </p>
+            ` : ""}
+
+            <p><b>Reason / Disease:</b>
+                ${escapeHTML(a.reason || "Not specified")}</p>
+        </div>
+    `).join("");
+}
+
+/* CLEAR DEMO RECORDS */
+
+function clearAll() {
+    if (!confirm("Clear all demo appointment records?")) {
+        return;
+    }
+
+    appointments = [];
+    editingAppointmentId = null;
+
+    save();
+    renderAdmin();
+    manageResult.innerHTML = "";
+    confirmation.style.display = "none";
+}
+
+/* INITIAL SETUP */
+
+deptInput.addEventListener("change", updateDoctors);
+doctorInput.addEventListener("change", updateSlots);
+dateInput.addEventListener("change", updateSlots);
+
+const today = new Date();
+const localToday = new Date(
+    today.getTime() - today.getTimezoneOffset() * 60000
+).toISOString().split("T")[0];
+
+dateInput.min = localToday;
+
+renderDoctors();
+renderAdmin();
+
+</script>
+</body>
+</html>
